@@ -8,7 +8,6 @@ export class AccountsController {
 
     @Get()
     findAll() {
-        console.log('asdas');
         return this.accountService.findAll();
     }
 

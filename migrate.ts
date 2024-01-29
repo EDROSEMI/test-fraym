@@ -1,18 +1,17 @@
-import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { NodePgDatabase, drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import * as schema from '@/drizzle/schema'
-import { Client } from 'pg';
+import { Client, Pool } from 'pg';
 
-// const client = new Client();
 const client = new Client({
     host: process.env.DB_HOST,
-    port: parseInt(process.env.DP_PORT),
+    port: parseInt(process.env.DB_PORT),
     user: process.env.DB_USER,
-    password: process.env.DP_PASSWORD,
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
 })
 client.connect()
-const db: PostgresJsDatabase<typeof schema> = drizzle(client, { schema });
+const db: NodePgDatabase<typeof schema> = drizzle(client, { schema });
 
 
 const main = async () => {

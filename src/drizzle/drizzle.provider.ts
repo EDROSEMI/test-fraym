@@ -1,46 +1,31 @@
-import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js'
 import * as schema from './schema'
 
 export const DrizzleAsyncProvider = "drizzleProvider"
 
 
-import { Client } from "pg";
+import { Pool } from "pg";
 import { Injectable } from '@nestjs/common';
+import { NodePgDatabase, drizzle } from 'drizzle-orm/node-postgres';
+
 
 @Injectable()
 export class DrizzleConnectionProvider {
-    private readonly db: PostgresJsDatabase<typeof schema>
+    private readonly db: NodePgDatabase<typeof schema>
 
     constructor() {
-        const client = new Client({
+        const pool = new Pool({
             host: process.env.DB_HOST,
-            port: parseInt(process.env.DP_PORT),
+            port: parseInt(process.env.DB_PORT),
             user: process.env.DB_USER,
-            password: process.env.DP_PASSWORD,
+            password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
         });
 
-        client.connect()
-        this.db = drizzle(client, { schema })
+        this.db = drizzle(pool, { schema })
+
+        console.log('in constructor :', Object.keys(this.db));
     }
 
-    getConnection = (): PostgresJsDatabase<typeof schema> => this.db
+    getConnection = (): NodePgDatabase<typeof schema> => this.db
 }
-
-
-// export const drizzleProvider = {
-//     provide: DrizzleAsyncProvider,
-//     useFactory: async () => {
-//         const postgre = new Pool({
-//             port: parseInt(process.env.DP_PORT),
-//             host: process.env.DB_HOST,
-//             user: process.env.DB_USER,
-//             password: process.env.DB_PASSWORD,
-//             database: process.env.DB_NAME,
-//         })
-//         return drizzle(postgre, { schema })
-//     },
-//     // exports: [DrizzleAsyncProvider]
-// }
-
 
